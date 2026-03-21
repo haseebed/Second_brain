@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Today</h2>
+
+<!-- Urgent Deadlines -->
+<h5 class="mt-4 mb-3">🔥 Urgent Deadlines</h5>
+{% if tagged %}
+  {% for item, urgency, days_left in tagged %}
+    <div class="alert alert-{{ urgency }} d-flex justify-content-between align-items-center">
+      <div>
+        <strong>{{ item['content'] }}</strong>
+        {% if item['subject'] %}
+          <span class="badge bg-secondary ms-2">{{ item['subject'] }}</span>
+        {% endif %}
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <div class="text-end">
+          <small>{{ item['due_date'] }}</small><br/>
+          {% if days_left < 0 %}
+            <small>{{ days_left|abs }} days overdue</small>
+          {% elif days_left == 0 %}
+            <small>Due today!</small>
+          {% else %}
+            <small>{{ days_left }} days left</small>
+          {% endif %}
+        </div>
+        <form action="/delete/{{ item['id'] }}" method="POST">
+          <button class="btn btn-sm btn-outline-danger" type="submit">🗑️</button>
+        </form>
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <p class="text-muted">No upcoming deadlines. You're all good!</p>
+{% endif %}
+
+<!-- Recent Captures -->
+<h5 class="mt-4 mb-3">📥 Recent Captures</h5>
+{% if recents %}
+  {% for item in recents %}
+    <div class="card mb-2 p-3 d-flex flex-row justify-content-between align-items-center">
+      <div>
+        <p class="mb-0">{{ item['content'] }}</p>
+        <small class="text-muted">{{ item['created_at'] }}</small>
+      </div>
+      <form action="/delete/{{ item['id'] }}" method="POST">
+        <button class="btn btn-sm btn-outline-danger" type="submit">🗑️</button>
+      </form>
+    </div>
+  {% endfor %}
+{% else %}
+  <p class="text-muted">Nothing captured yet. Use the bar above!</p>
+{% endif %}
+
+{% endblock %}

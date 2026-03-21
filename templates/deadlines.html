@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Deadlines</h2>
+
+<!-- Add deadline form -->
+<div class="card mb-4 p-3">
+  <form action="/deadlines" method="POST" class="row g-2">
+    <div class="col-md-4">
+      <input type="text" name="content" class="form-control" placeholder="Assignment title" required/>
+    </div>
+    <div class="col-md-3">
+      <input type="text" name="subject" class="form-control" placeholder="Subject (e.g. Maths)"/>
+    </div>
+    <div class="col-md-3">
+      <input type="date" name="due_date" class="form-control" required/>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100" type="submit">Add</button>
+    </div>
+  </form>
+</div>
+
+<!-- Deadline list -->
+{% if tagged %}
+  {% for item, urgency, days_left in tagged %}
+<div class="alert alert-{{ urgency }} d-flex justify-content-between align-items-center">
+  <div>
+    <strong>{{ item['content'] }}</strong>
+    {% if item['subject'] %}
+      <span class="badge bg-secondary ms-2">{{ item['subject'] }}</span>
+    {% endif %}
+  </div>
+  <div class="d-flex align-items-center gap-3">
+    <div class="text-end">
+      <small>{{ item['due_date'] }}</small><br/>
+      {% if days_left < 0 %}
+        <small>{{ days_left|abs }} days overdue</small>
+      {% elif days_left == 0 %}
+        <small>Due today!</small>
+      {% else %}
+        <small>{{ days_left }} days left</small>
+      {% endif %}
+    </div>
+    <!-- Trash button -->
+    <form action="/delete/{{ item['id'] }}" method="POST">
+      <button class="btn btn-sm btn-outline-danger" type="submit">🗑️</button>
+    </form>
+  </div>
+</div>
+  {% endfor %}
+{% else %}
+  <p class="text-muted">No deadlines yet. Add one above!</p>
+{% endif %}
+
+{% endblock %}

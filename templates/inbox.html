@@ -5,12 +5,18 @@
 
 {% if items %}
   {% for item in items %}
-    <div class="card mb-2 p-3">
-      <p class="mb-0">{{ item['content'] }}</p>
-      <small class="text-muted">{{ item['created_at'] }}</small>
+    <div class="card mb-2 p-3 d-flex flex-row justify-content-between align-items-center">
+      <div>
+        <p class="mb-0">{{ item['content'] }}</p>
+        <small class="text-muted">{{ item['created_at'] }}</small>
+      </div>
+      <form action="/delete/{{ item['id'] }}" method="POST">
+        <button class="btn btn-sm btn-outline-danger" type="submit">🗑️</button>
+      </form>
     </div>
   {% endfor %}
 {% else %}
   <p class="text-muted">Nothing here yet. Use the capture bar above!</p>
 {% endif %}
+
 {% endblock %}
