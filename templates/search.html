@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0 fw-semibold">Search</h4>
+</div>
+
+<form action="/search" method="GET" class="mb-4 d-flex gap-2">
+  <input
+    type="text"
+    name="q"
+    class="form-control"
+    placeholder="Search everything..."
+    value="{{ q }}"
+    autocomplete="off"
+    autofocus
+  />
+  <button class="btn btn-primary px-4" type="submit">Search</button>
+</form>
+
+{% if q %}
+  {% if items %}
+    <p class="text-muted mb-3" style="font-size:13px">{{ items|length }} result{{ 's' if items|length != 1 }} for "<strong>{{ q }}</strong>"</p>
+    {% for item in items %}
+    <div class="card mb-2 shadow-sm">
+      <div class="card-body py-3 px-3 d-flex justify-content-between align-items-center gap-2">
+        <div>
+          <p class="mb-0 fw-medium">{{ item['content'] }}</p>
+          <div class="d-flex gap-2 mt-1">
+            <small class="text-muted" style="font-size:11px;font-family:monospace">{{ item['created_at'][:10] }}</small>
+            <span class="badge rounded-pill bg-light text-secondary border" style="font-size:11px">{{ item['type'] }}</span>
+            {% if item['source'] and item['source'] != 'other' %}
+              <span class="badge rounded-pill bg-light text-secondary border" style="font-size:11px">{{ item['source'] }}</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <form action="/star/{{ item['id'] }}" method="POST" class="d-inline">
+            <button class="btn btn-sm btn-outline-warning" type="submit">
+              {{ '⭐' if item['is_favorite'] else '☆' }}
+            </button>
+          </form>
+          <form action="/done/{{ item['id'] }}" method="POST" class="d-inline">
+            <button class="btn btn-sm btn-outline-success" type="submit">✓</button>
+          </form>
+          <form action="/delete/{{ item['id'] }}" method="POST" class="d-inline">
+            <button class="btn btn-sm btn-outline-danger" type="submit"
+              onclick="return confirm('Delete this item?')">🗑</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="text-center py-5">
+      <div style="font-size:56px;margin-bottom:16px">🔍</div>
+      <h5 class="fw-semibold">No results</h5>
+      <p class="text-muted" style="font-size:14px">Nothing matched "<strong>{{ q }}</strong>"</p>
+    </div>
+  {% endif %}
+{% else %}
+  <div class="text-center py-5">
+    <div style="font-size:56px;margin-bottom:16px">🔍</div>
+    <p class="text-muted" style="font-size:14px">Type something above to search across all your captures.</p>
+  </div>
+{% endif %}
+
+{% endblock %}

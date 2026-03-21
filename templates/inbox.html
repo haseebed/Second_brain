@@ -28,13 +28,12 @@
 
       <!-- Action row -->
       <div class="d-flex gap-2 flex-wrap align-items-center">
-        
         <form action="/star/{{ item['id'] }}" method="POST" class="d-inline">
           <button class="btn btn-sm btn-outline-warning" type="submit">
             {{ '⭐' if item['is_favorite'] else '☆' }}
           </button>
         </form>
-
+        
         <!-- Move to Deadlines (needs due date) -->
         <button class="btn btn-sm btn-outline-secondary"
           onclick="toggleTriage({{ item['id'] }})">

@@ -196,6 +196,25 @@ def toggle_star(item_id):
     db.close()
     return redirect(request.referrer or url_for("today"))
 
+
+# ─────────────────────────────────────────
+#  SEARCH OPTION
+# ─────────────────────────────────────────
+
+@app.route("/search")
+def search():
+    q = request.args.get("q", "").strip()
+    items = []
+    if q:
+        db = get_db()
+        items = db.execute("""
+            SELECT * FROM items
+            WHERE content LIKE ?
+            ORDER BY created_at DESC
+        """, (f"%{q}%",)).fetchall()
+        db.close()
+    return render_template("search.html", items=items, q=q)
+
 # ─────────────────────────────────────────
 #  MOVE (triage inbox item)
 # ─────────────────────────────────────────
