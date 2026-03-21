@@ -1,22 +1,100 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h2>Inbox</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0 fw-semibold">Inbox</h4>
+  {% if items %}
+    <span class="badge bg-secondary rounded-pill">{{ items|length }} items</span>
+  {% endif %}
+</div>
+
+<!-- Add item inline -->
+<form action="/inbox" method="POST" class="mb-4 d-flex gap-2">
+  <input type="text" name="content" class="form-control" placeholder="Add to inbox..." autocomplete="off"/>
+  <button class="btn btn-primary px-4" type="submit">Add</button>
+</form>
 
 {% if items %}
   {% for item in items %}
-    <div class="card mb-2 p-3 d-flex flex-row justify-content-between align-items-center">
-      <div>
-        <p class="mb-0">{{ item['content'] }}</p>
-        <small class="text-muted">{{ item['created_at'] }}</small>
+  <div class="card mb-2 shadow-sm">
+
+    <div class="card-body py-3 px-3">
+
+      <!-- Content row -->
+      <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+        <p class="mb-0 fw-medium">{{ item['content'] }}</p>
+        <small class="text-muted text-nowrap" style="font-size:11px">{{ item['created_at'][:10] }}</small>
       </div>
-      <form action="/delete/{{ item['id'] }}" method="POST">
-        <button class="btn btn-sm btn-outline-danger" type="submit">🗑️</button>
-      </form>
+
+      <!-- Action row -->
+      <div class="d-flex gap-2 flex-wrap align-items-center">
+        
+        <form action="/star/{{ item['id'] }}" method="POST" class="d-inline">
+          <button class="btn btn-sm btn-outline-warning" type="submit">
+            {{ '⭐' if item['is_favorite'] else '☆' }}
+          </button>
+        </form>
+
+        <!-- Move to Deadlines (needs due date) -->
+        <button class="btn btn-sm btn-outline-secondary"
+          onclick="toggleTriage({{ item['id'] }})">
+          🕐 Deadline
+        </button>
+
+        <!-- Move to Watchlist -->
+        <form action="/move/{{ item['id'] }}" method="POST" class="d-inline">
+          <input type="hidden" name="destination" value="watchlist"/>
+          <button class="btn btn-sm btn-outline-secondary" type="submit">🔖 Watchlist</button>
+        </form>
+
+        <!-- Done -->
+        <form action="/done/{{ item['id'] }}" method="POST" class="d-inline">
+          <button class="btn btn-sm btn-outline-success" type="submit">✓ Done</button>
+        </form>
+
+        <!-- Delete -->
+        <form action="/delete/{{ item['id'] }}" method="POST" class="d-inline ms-auto">
+          <button class="btn btn-sm btn-outline-danger" type="submit"
+            onclick="return confirm('Delete this item? This cannot be undone.')">🗑</button>
+        </form>
+
+      </div>
+
+      <!-- Inline triage form for deadline (hidden by default) -->
+      <div id="triage-{{ item['id'] }}" class="triage-form mt-2" style="display:none">
+        <form action="/move/{{ item['id'] }}" method="POST" class="d-flex gap-2 flex-wrap align-items-end">
+          <input type="hidden" name="destination" value="deadline"/>
+          <div>
+            <label style="font-size:11px;color:#8a8880;text-transform:uppercase;letter-spacing:.05em">Due date</label>
+            <input type="date" name="due_date" class="form-control form-control-sm" required style="width:160px"/>
+          </div>
+          <div>
+            <label style="font-size:11px;color:#8a8880;text-transform:uppercase;letter-spacing:.05em">Subject</label>
+            <input type="text" name="subject" class="form-control form-control-sm" placeholder="e.g. Maths" style="width:130px"/>
+          </div>
+          <button class="btn btn-sm btn-primary" type="submit">Move</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary"
+            onclick="toggleTriage({{ item['id'] }})">Cancel</button>
+        </form>
+      </div>
+
     </div>
+  </div>
   {% endfor %}
+
 {% else %}
-  <p class="text-muted">Nothing here yet. Use the capture bar above!</p>
+  <!-- Empty state -->
+  <div class="text-center py-5">
+    <div style="font-size:56px;margin-bottom:16px">📭</div>
+    <h5 class="fw-semibold text-dark">Inbox zero!</h5>
+    <p class="text-muted" style="font-size:14px">Everything's been triaged. <br/>Use the field above to capture something new.</p>
+  </div>
 {% endif %}
 
+<script>
+function toggleTriage(id) {
+  const el = document.getElementById('triage-' + id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+</script>
 {% endblock %}

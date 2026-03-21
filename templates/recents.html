@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0 fw-semibold">Recents</h4>
+  <span class="badge bg-secondary rounded-pill">last 10</span>
+</div>
+
+{% if items %}
+  {% for item in items %}
+  <div class="card mb-2 shadow-sm">
+    <div class="card-body py-3 px-3 d-flex justify-content-between align-items-center gap-2">
+      <div>
+        <p class="mb-0 fw-medium">{{ item['content'] }}</p>
+        <div class="d-flex gap-2 mt-1">
+          <small class="text-muted" style="font-size:11px;font-family:monospace">{{ item['created_at'][:10] }}</small>
+          <span class="badge rounded-pill bg-light text-secondary border" style="font-size:11px">{{ item['type'] }}</span>
+          {% if item['source'] and item['source'] != 'other' %}
+            <span class="badge rounded-pill bg-light text-secondary border" style="font-size:11px">{{ item['source'] }}</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="d-flex gap-2 align-items-center">
+        <form action="/star/{{ item['id'] }}" method="POST" class="d-inline">
+          <button class="btn btn-sm btn-outline-warning" type="submit">
+            {{ '⭐' if item['is_favorite'] else '☆' }}
+          </button>
+        </form>
+        <form action="/done/{{ item['id'] }}" method="POST" class="d-inline">
+          <button class="btn btn-sm btn-outline-success" type="submit">✓</button>
+        </form>
+        <form action="/delete/{{ item['id'] }}" method="POST" class="d-inline">
+          <button class="btn btn-sm btn-outline-danger" type="submit"
+            onclick="return confirm('Delete this item?')">🗑</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+{% else %}
+  <div class="text-center py-5">
+    <div style="font-size:56px;margin-bottom:16px">🕓</div>
+    <h5 class="fw-semibold">Nothing yet</h5>
+    <p class="text-muted" style="font-size:14px">Your 10 most recent captures will show up here.</p>
+  </div>
+{% endif %}
+
+{% endblock %}

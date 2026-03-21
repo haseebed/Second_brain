@@ -1,56 +1,112 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h2>Today</h2>
-
-<!-- Urgent Deadlines -->
-<h5 class="mt-4 mb-3">🔥 Urgent Deadlines</h5>
-{% if tagged %}
-  {% for item, urgency, days_left in tagged %}
-    <div class="alert alert-{{ urgency }} d-flex justify-content-between align-items-center">
-      <div>
-        <strong>{{ item['content'] }}</strong>
-        {% if item['subject'] %}
-          <span class="badge bg-secondary ms-2">{{ item['subject'] }}</span>
-        {% endif %}
-      </div>
-      <div class="d-flex align-items-center gap-3">
-        <div class="text-end">
-          <small>{{ item['due_date'] }}</small><br/>
-          {% if days_left < 0 %}
-            <small>{{ days_left|abs }} days overdue</small>
-          {% elif days_left == 0 %}
-            <small>Due today!</small>
-          {% else %}
-            <small>{{ days_left }} days left</small>
-          {% endif %}
-        </div>
-        <form action="/delete/{{ item['id'] }}" method="POST">
-          <button class="btn btn-sm btn-outline-danger" type="submit">🗑️</button>
-        </form>
-      </div>
-    </div>
-  {% endfor %}
-{% else %}
-  <p class="text-muted">No upcoming deadlines. You're all good!</p>
-{% endif %}
-
-<!-- Recent Captures -->
-<h5 class="mt-4 mb-3">📥 Recent Captures</h5>
-{% if recents %}
-  {% for item in recents %}
-    <div class="card mb-2 p-3 d-flex flex-row justify-content-between align-items-center">
-      <div>
-        <p class="mb-0">{{ item['content'] }}</p>
-        <small class="text-muted">{{ item['created_at'] }}</small>
-      </div>
-      <form action="/delete/{{ item['id'] }}" method="POST">
-        <button class="btn btn-sm btn-outline-danger" type="submit">🗑️</button>
+{% if starred %}
+<div class="mb-4">
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <span style="font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#8a8880">⭐ Starred</span>
+    <span class="badge rounded-pill bg-light text-secondary border">{{ starred|length }}</span>
+  </div>
+  {% for item in starred %}
+  <div class="card mb-2 shadow-sm">
+    <div class="card-body py-3 px-3 d-flex justify-content-between align-items-center gap-2">
+      <p class="mb-0 fw-medium">{{ item['content'] }}</p>
+      <form action="/star/{{ item['id'] }}" method="POST" class="d-inline">
+        <button class="btn btn-sm btn-warning" type="submit">⭐</button>
       </form>
     </div>
+  </div>
   {% endfor %}
-{% else %}
-  <p class="text-muted">Nothing captured yet. Use the bar above!</p>
+</div>
 {% endif %}
+
+<!-- Urgent Deadlines -->
+<div class="mb-4">
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <span style="font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#8a8880">Urgent Deadlines</span>
+    {% if tagged %}
+      <span class="badge rounded-pill" style="background:#ede9ff;color:#5b4fff;font-size:11px">{{ tagged|length }}</span>
+    {% endif %}
+  </div>
+
+  {% if tagged %}
+    {% for item, urgency, days_left in tagged %}
+    <div class="card mb-2 shadow-sm border-start border-4
+      {% if urgency == 'danger' %}border-danger
+      {% elif urgency == 'warning' %}border-warning
+      {% else %}border-success{% endif %}">
+      <div class="card-body py-3 px-3 d-flex justify-content-between align-items-center gap-2">
+        <div>
+          <p class="mb-0 fw-medium">{{ item['content'] }}</p>
+          {% if item['subject'] %}
+            <span class="badge rounded-pill bg-light text-secondary border mt-1" style="font-size:11px">{{ item['subject'] }}</span>
+          {% endif %}
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="text-end">
+            <small class="text-muted d-block" style="font-size:11px">{{ item['due_date'] }}</small>
+            {% if days_left < 0 %}
+              <small class="text-danger fw-medium">{{ days_left|abs }}d overdue</small>
+            {% elif days_left == 0 %}
+              <small class="text-warning fw-medium">Due today!</small>
+            {% else %}
+              <small class="text-success fw-medium">{{ days_left }}d left</small>
+            {% endif %}
+          </div>
+          <form action="/done/{{ item['id'] }}" method="POST" class="d-inline">
+            <button class="btn btn-sm btn-outline-success" type="submit">✓</button>
+          </form>
+          <form action="/delete/{{ item['id'] }}" method="POST" class="d-inline">
+            <button class="btn btn-sm btn-outline-danger" type="submit"
+              onclick="return confirm('Delete this deadline?')">🗑</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="text-center py-4">
+      <div style="font-size:40px;margin-bottom:8px">🎉</div>
+      <p class="text-muted mb-0" style="font-size:14px">No urgent deadlines. You're all good!</p>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Recent Captures -->
+<div>
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <span style="font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#8a8880">Recent Captures</span>
+    {% if recents %}
+      <span class="badge rounded-pill" style="background:#ede9ff;color:#5b4fff;font-size:11px">{{ recents|length }}</span>
+    {% endif %}
+  </div>
+
+  {% if recents %}
+    {% for item in recents %}
+    <div class="card mb-2 shadow-sm">
+      <div class="card-body py-3 px-3 d-flex justify-content-between align-items-center gap-2">
+        <div>
+          <p class="mb-0 fw-medium">{{ item['content'] }}</p>
+          <small class="text-muted" style="font-size:11px">{{ item['created_at'][:10] }}</small>
+        </div>
+        <div class="d-flex gap-2">
+          <form action="/done/{{ item['id'] }}" method="POST" class="d-inline">
+            <button class="btn btn-sm btn-outline-success" type="submit">✓</button>
+          </form>
+          <form action="/delete/{{ item['id'] }}" method="POST" class="d-inline">
+            <button class="btn btn-sm btn-outline-danger" type="submit"
+              onclick="return confirm('Delete this item?')">🗑</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="text-center py-4">
+      <div style="font-size:40px;margin-bottom:8px">📭</div>
+      <p class="text-muted mb-0" style="font-size:14px">Nothing captured yet.<br/>Use the field above to add something!</p>
+    </div>
+  {% endif %}
+</div>
 
 {% endblock %}
