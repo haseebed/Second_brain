@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Inbox</h2>
+
+{% if items %}
+  {% for item in items %}
+    <div class="card mb-2 p-3">
+      <p class="mb-0">{{ item['content'] }}</p>
+      <small class="text-muted">{{ item['created_at'] }}</small>
+    </div>
+  {% endfor %}
+{% else %}
+  <p class="text-muted">Nothing here yet. Use the capture bar above!</p>
+{% endif %}
+{% endblock %}
