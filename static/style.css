@@ -1,11 +1,9 @@
-
-    body, .content, .main, .wrapper { background: #f6f5f2 !important; }
-    .sidebar { background: #222E3C !important; }
-
-    body, .content, .main, .wrapper { 
+body, .content, .main, .wrapper {
   background: #f6f5f2 !important;
   font-size: 17px !important;
 }
+.sidebar { background: #222E3C !important; }
+
 
 input, textarea, select, button {
   font-size: inherit !important;
@@ -83,7 +81,7 @@ input, textarea, select, button {
     .mobile-nav a.active { background: rgba(255,255,255,0.12); color: #fff; }
     .mobile-nav a svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-    @media (max-width: 768px) {
+    @media (max-width: 992px) {
       .hamburger-btn { display: flex !important; }
       .mobile-nav    { display: block !important; }
       .sidebar       { display: none !important; }

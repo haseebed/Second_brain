@@ -3,14 +3,6 @@
 
 A clean, fast personal productivity web app to capture thoughts, track deadlines, and manage your watch/read list — all in one place.
 
----
-
-## Video Demo
-<!-- Replace this link with your actual CS50 video URL -->
-`https://youtu.be/your-video-id-here`
-
----
-
 ## Description
 
 Second Brain is a web application built with Python and Flask that helps you stay on top of your thoughts, assignments, and things you want to watch or read. The core idea is simple: open the app, capture whatever is on your mind instantly, then triage it into the right place.
@@ -36,8 +28,6 @@ The app has five main sections:
 **Single table architecture** — everything lives in one `items` table with a `type` column (`idea`, `deadline`, `watchlist`) and a `status` column (`inbox`, `active`, `done`). This keeps the database simple and means one delete or done route works for every item across every page.
 
 **Triage over instant categorization** — rather than forcing you to categorize something at capture time, you dump it to inbox first and sort it later. This is intentional. The capture step needs to be as fast as possible so you don't lose the thought. Sorting happens separately when you have a moment.
-
-**No separate `/capture` route** — early versions used a dedicated POST endpoint for capturing. This was replaced with a combined GET/POST pattern on each page — the same route handles both showing the page and saving new items. This simplifies the code and eliminates the middleman redirect.
 
 **Done vs Delete** — deleting is permanent. Marking as done hides the item from active views but keeps it in the database. This means your history is preserved and accidental deletions are avoided. Delete requires a browser confirmation dialog as an extra safeguard.
 
