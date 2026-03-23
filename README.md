@@ -1,6 +1,6 @@
 # Second Brain
 ### CS50X Final Project — 2026
-
+#### Video Demo:  https://youtu.be/4ljVE54qr5U
 A clean, fast personal productivity web app to capture thoughts, track deadlines, and manage your watch/read list — all in one place.
 
 ## Description
